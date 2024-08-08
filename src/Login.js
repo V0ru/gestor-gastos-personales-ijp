@@ -11,7 +11,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log('Login Success:', user);
-      // Manejar el inicio de sesión exitoso
+      // Manejar el inicio de sesión exitoso, por ejemplo, guardar el usuario en el estado global
     } catch (error) {
       console.error('Login Failed:', error);
       // Manejar el inicio de sesión fallido
