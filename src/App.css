@@ -7,6 +7,8 @@
   align-items: center;
   width: 100vw;
   height: 90vh;
+  margin-top: 80px; /* Ajusta este valor según la altura de tu Header */
+  padding: 20px; /* Añade un poco de relleno para separar el contenido */
 }
 .signup-signin-container {
   width: 30vw;
@@ -129,7 +131,7 @@
   box-shadow: 0px 0px 30px 8px rgba(227, 227, 227, 0.75);
   border-radius: 0.5rem !important;
   padding: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 4rem;  
 }
 
 .dashboard-container {

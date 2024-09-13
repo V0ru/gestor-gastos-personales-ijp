@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Form, Input, DatePicker, Select, Button } from "antd";
+import { toast } from "react-toastify";
 
 function AddIncomeModal({
   isIncomeModalVisible,
@@ -7,6 +8,14 @@ function AddIncomeModal({
   onFinish,
 }) {
   const [form] = Form.useForm();
+
+  const validateAmount = (value) => {
+    if (value <= 0) {
+      toast.error("¡La cantidad del ingreso debe ser mayor a 0!");
+      return Promise.reject(new Error("La cantidad del ingreso debe ser mayor a 0"));
+    }
+    return Promise.resolve();
+  };
 
   return (
     <Modal
@@ -46,13 +55,16 @@ function AddIncomeModal({
               required: true,
               message: "¡Por favor ingrese el monto del ingreso!",
             },
+            {
+              validator: (_, value) => validateAmount(value),
+            },
           ]}
         >
           <Input type="number" className="border border-gray-400 rounded-lg p-2 w-full" />
         </Form.Item>
         <Form.Item
           style={{ fontWeight: 600 }}
-          label="Date"
+          label="Fecha"
           name="date"
           rules={[{ required: true, message: "Por favor agregar la fecha!" }]}
         >
@@ -60,16 +72,18 @@ function AddIncomeModal({
         </Form.Item>
         <Form.Item
           style={{ fontWeight: 600 }}
-          label="Categoria"
+          label="Categoría"
           name="tag"
           rules={[
-            { required: true, message: "Por favor selecciona la categoria!" },
+            { required: true, message: "Por favor selecciona la categoría!" },
           ]}
         >
           <Select className="border border-gray-400 rounded-lg p-2 w-full">
             <Select.Option value="salario">Salario</Select.Option>
             <Select.Option value="freelance">Freelance</Select.Option>
             <Select.Option value="inversiones">Inversión</Select.Option>
+            <Select.Option value="gastos_medicos">Gastos Médicos</Select.Option>
+            <Select.Option value="otros">Otros</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item>

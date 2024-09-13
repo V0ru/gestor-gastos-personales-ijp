@@ -1,9 +1,9 @@
+//Header/index.jsx
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../firebase";
 import userSvg from "../../assets/user.svg";
-import "./styles.css";
 
 function Header() {
   const [user] = useAuthState(auth);
@@ -24,7 +24,7 @@ function Header() {
 
   return (
     <div className="flex justify-between items-center bg-blue-500 p-4">
-      <p className="text-white text-lg font-bold">FinanDay.</p>
+      <p className="text-white text-lg font-bold ">FinanDay.</p>
       {user && (
         <button
           className="flex items-center space-x-2 text-white text-sm focus:outline-none"

@@ -5,6 +5,7 @@ import search from "../assets/search.svg";
 import { parse } from "papaparse";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+
 const { Search } = Input;
 const { Option } = Select;
 
@@ -16,7 +17,7 @@ const TransactionSearch = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState(""); 
   const [sortKey, setSortKey] = useState("");
   const fileInput = useRef();
 
@@ -27,7 +28,6 @@ const TransactionSearch = ({
         header: true,
         complete: async function (results) {
           for (const transaction of results.data) {
-            console.log("Transacciones", transaction);
             const newTransaction = {
               ...transaction,
               amount: parseInt(transaction.amount),
@@ -56,7 +56,7 @@ const TransactionSearch = ({
       key: "type",
     },
     {
-      title: "Date",
+      title: "Fecha",
       dataIndex: "date",
       key: "date",
     },
@@ -66,7 +66,7 @@ const TransactionSearch = ({
       key: "amount",
     },
     {
-      title: "Categoria",
+      title: "Categoría",
       dataIndex: "tag",
       key: "tag",
     },
@@ -105,13 +105,14 @@ const TransactionSearch = ({
           <input
             placeholder="Buscar por nombre"
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="input"
           />
         </div>
         <Select
           className="select-input"
           onChange={(value) => setTypeFilter(value)}
           value={typeFilter}
-          placeholder="Filtrar"
+          placeholder="Filtrar por tipo"
           allowClear
         >
           <Option value="">Todo</Option>

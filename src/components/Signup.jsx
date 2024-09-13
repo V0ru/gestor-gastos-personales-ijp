@@ -15,9 +15,40 @@ const SignUpSignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState(""); // Añadido
   const [loading, setLoading] = useState(false);
   const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
+
+  const validateFields = () => {
+    if (name.length < 1 || name.length > 30) {
+      toast.error("El nombre completo debe tener entre 1 y 30 caracteres.");
+      return false;
+    }
+
+    if (email.length < 10 || email.length > 30) {
+      toast.error("El email debe tener entre 10 y 30 caracteres.");
+      return false;
+    }
+
+    if (password.length < 6 || password.length > 12) {
+      toast.error("La contraseña debe tener entre 6 y 12 caracteres.");
+      return false;
+    }
+
+
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden.");
+      return false;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+      toast.error("El teléfono debe tener exactamente 10 dígitos numéricos.");
+      return false;
+    }
+
+    return true;
+  };
 
   const createUserDocument = async (user) => {
     setLoading(true);
@@ -35,6 +66,7 @@ const SignUpSignIn = () => {
           name: displayName ? displayName : name,
           email,
           photoURL: photoURL ? photoURL : "",
+          phone, 
           createdAt,
         });
         toast.success("Cuenta creada!");
@@ -50,6 +82,12 @@ const SignUpSignIn = () => {
   const signUpWithEmail = async (e) => {
     setLoading(true);
     e.preventDefault();
+
+    if (!validateFields()) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await createUserWithEmailAndPassword(
         auth,
@@ -74,6 +112,13 @@ const SignUpSignIn = () => {
   const signInWithEmail = async (e) => {
     setLoading(true);
     e.preventDefault();
+    
+    if (email.length < 10 || email.length > 30 || password.length < 6 || password.length > 12) {
+      toast.error("Verifica que el email y la contraseña cumplan con las restricciones.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const user = result.user;
@@ -102,7 +147,7 @@ const SignUpSignIn = () => {
     } catch (error) {
       setLoading(false);
       toast.error(error.message);
-      console.error("Error al iniciar sesion con Google: ", error.message);
+      console.error("Error al iniciar sesión con Google: ", error.message);
     }
   };
 
@@ -115,7 +160,7 @@ const SignUpSignIn = () => {
             <h2 className="text-center">
               Iniciar sesión en <span className="text-blue-500">FinanDay.</span>
             </h2>
-            <form onSubmit={signUpWithEmail}>
+            <form onSubmit={signInWithEmail}>
               <div className="input-wrapper">
                 <p>Email</p>
                 <input
@@ -141,7 +186,7 @@ const SignUpSignIn = () => {
               <button
                 disabled={loading}
                 className="btn"
-                onClick={signInWithEmail}
+                type="submit"
               >
                 {loading ? "Loading..." : "Iniciar sesión con correo electrónico y contraseña"}
               </button>
@@ -184,6 +229,17 @@ const SignUpSignIn = () => {
                   placeholder="ijpenaloza@unicesar.edu.co"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="input"
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <p>Teléfono</p>
+                <input
+                  type="text"
+                  placeholder="3002231200" // Debe tener 11 dígitos
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   className="input"
                 />
               </div>
