@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, PhoneAuthProvider } from "firebase/auth"; // Asegúrate de incluir PhoneAuthProvider
+
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -15,6 +16,4 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
-const phoneProvider = new PhoneAuthProvider(auth); // Asegúrate de definir PhoneAuthProvider
-
-export { db, auth, provider, phoneProvider, doc, setDoc };
+export { db, auth, provider, doc, setDoc };
