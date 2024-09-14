@@ -12,7 +12,6 @@ function AddExpenseModal({
   const validateAmount = (value) => {
     const regex = /^[1-9]{2,8}$/; 
     if (!regex.test(value)) {
-      toast.error("¡La cantidad debe ser un número entre 2 y 8 dígitos!");
       return Promise.reject(
         new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
       );
@@ -22,7 +21,6 @@ function AddExpenseModal({
 
   const validateName = (value) => {
     if (value.length < 5 || value.length > 20) {
-      toast.error("¡El nombre debe tener entre 5 y 20 caracteres!");
       return Promise.reject(
         new Error("El nombre debe tener entre 5 y 20 caracteres")
       );

@@ -12,13 +12,11 @@ function AddIncomeModal({
   const validateAmount = (value) => {
     const regex = /^[1-9]{2,8}$/; 
     if (!regex.test(value)) {
-      toast.error("¡La cantidad debe ser un número entre 2 y 8 dígitos!");
       return Promise.reject(
         new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
       );
     }
     if (value <= 0) {
-      toast.error("¡La cantidad del ingreso debe ser mayor a 0!");
       return Promise.reject(
         new Error("La cantidad del ingreso debe ser mayor a 0")
       );
@@ -28,7 +26,6 @@ function AddIncomeModal({
 
   const validateName = (value) => {
     if (value.length < 5 || value.length > 20) {
-      toast.error("¡El nombre debe tener entre 5 y 20 caracteres!");
       return Promise.reject(
         new Error("El nombre debe tener entre 5 y 20 caracteres")
       );
