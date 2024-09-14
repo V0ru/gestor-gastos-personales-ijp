@@ -116,8 +116,8 @@ const TransactionSearch = ({
           allowClear
         >
           <Option value="">Todo</Option>
-          <Option value="income">Ingreso</Option>
-          <Option value="expense">Gasto</Option>
+          <Option value="ingreso">Income</Option>
+          <Option value="gasto">Expense</Option>
         </Select>
       </div>
       <div className="my-table">

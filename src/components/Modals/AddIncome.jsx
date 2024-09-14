@@ -10,9 +10,28 @@ function AddIncomeModal({
   const [form] = Form.useForm();
 
   const validateAmount = (value) => {
+    const regex = /^[1-9]{2,8}$/; 
+    if (!regex.test(value)) {
+      toast.error("¡La cantidad debe ser un número entre 2 y 8 dígitos!");
+      return Promise.reject(
+        new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
+      );
+    }
     if (value <= 0) {
       toast.error("¡La cantidad del ingreso debe ser mayor a 0!");
-      return Promise.reject(new Error("La cantidad del ingreso debe ser mayor a 0"));
+      return Promise.reject(
+        new Error("La cantidad del ingreso debe ser mayor a 0")
+      );
+    }
+    return Promise.resolve();
+  };
+
+  const validateName = (value) => {
+    if (value.length < 5 || value.length > 20) {
+      toast.error("¡El nombre debe tener entre 5 y 20 caracteres!");
+      return Promise.reject(
+        new Error("El nombre debe tener entre 5 y 20 caracteres")
+      );
     }
     return Promise.resolve();
   };
@@ -42,10 +61,17 @@ function AddIncomeModal({
               required: true,
               message: "¡Por favor ingrese el nombre de la transacción!",
             },
+            {
+              validator: (_, value) => validateName(value),
+            },
           ]}
         >
-          <Input type="text" className="border border-gray-400 rounded-lg p-2 w-full" />
+          <Input
+            type="text"
+            className="border border-gray-400 rounded-lg p-2 w-full"
+          />
         </Form.Item>
+
         <Form.Item
           style={{ fontWeight: 600 }}
           label="Cantidad"
@@ -60,16 +86,24 @@ function AddIncomeModal({
             },
           ]}
         >
-          <Input type="number" className="border border-gray-400 rounded-lg p-2 w-full" />
+          <Input
+            type="number"
+            className="border border-gray-400 rounded-lg p-2 w-full"
+          />
         </Form.Item>
+
         <Form.Item
           style={{ fontWeight: 600 }}
           label="Fecha"
           name="date"
           rules={[{ required: true, message: "Por favor agregar la fecha!" }]}
         >
-          <DatePicker format="YYYY-MM-DD" className="border border-gray-400 rounded-lg p-2 w-full" />
+          <DatePicker
+            format="YYYY-MM-DD"
+            className="border border-gray-400 rounded-lg p-2 w-full"
+          />
         </Form.Item>
+
         <Form.Item
           style={{ fontWeight: 600 }}
           label="Categoría"
@@ -82,12 +116,16 @@ function AddIncomeModal({
             <Select.Option value="salario">Salario</Select.Option>
             <Select.Option value="freelance">Freelance</Select.Option>
             <Select.Option value="inversiones">Inversión</Select.Option>
-            <Select.Option value="gastos_medicos">Gastos Médicos</Select.Option>
             <Select.Option value="otros">Otros</Select.Option>
           </Select>
         </Form.Item>
+
         <Form.Item>
-          <Button className="bg-blue-500 text-white px-4 py-2 rounded-lg" type="primary" htmlType="submit">
+          <Button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+            type="primary"
+            htmlType="submit"
+          >
             Registrar ingreso
           </Button>
         </Form.Item>

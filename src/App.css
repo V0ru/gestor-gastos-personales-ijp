@@ -7,8 +7,8 @@
   align-items: center;
   width: 100vw;
   height: 90vh;
-  margin-top: 80px; /* Ajusta este valor según la altura de tu Header */
-  padding: 20px; /* Añade un poco de relleno para separar el contenido */
+  margin-top: 80px; 
+  padding: 20px; 
 }
 .signup-signin-container {
   width: 30vw;
