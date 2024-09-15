@@ -15,6 +15,7 @@ function AddExpenseModal({
       return Promise.reject(
         new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
       );
+      
     }
     return Promise.resolve(); 
   };
@@ -22,7 +23,7 @@ function AddExpenseModal({
   const validateName = (value) => {
     if (value.length < 5 || value.length > 20) {
       return Promise.reject(
-        new Error("El nombre debe tener entre 5 y 20 caracteres")
+        new Error("El nombre del gasto debe tener entre 5 y 20 caracteres")
       );
     }
     return Promise.resolve(); 

@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  fetchSignInMethodsForEmail, // Importa esta función
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "./Header";
@@ -36,7 +37,6 @@ const SignUpSignIn = () => {
       return false;
     }
 
-
     if (password !== confirmPassword) {
       toast.error("Las contraseñas no coinciden.");
       return false;
@@ -48,6 +48,16 @@ const SignUpSignIn = () => {
     }
 
     return true;
+  };
+
+  const checkEmailExists = async (email) => {
+    try {
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      return methods.length > 0; // Retorna true si el correo ya está en uso
+    } catch (error) {
+      console.error("Error al verificar el correo: ", error);
+      return false;
+    }
   };
 
   const createUserDocument = async (user) => {
@@ -88,12 +98,15 @@ const SignUpSignIn = () => {
       return;
     }
 
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+      toast.error("El correo electrónico ya está registrado.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const result = await createUserWithEmailAndPassword(auth, email, password);
       const user = result.user;
       await createUserDocument(user);
       toast.success("Registrado exitosamente!");
@@ -237,7 +250,7 @@ const SignUpSignIn = () => {
                 <p>Teléfono</p>
                 <input
                   type="text"
-                  placeholder="3002231200" // Debe tener 11 dígitos
+                  placeholder="3002231200" // Debe tener 10 dígitos
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="input"

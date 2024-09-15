@@ -9,16 +9,17 @@ function AddIncomeModal({
 }) {
   const [form] = Form.useForm();
 
+  // Actualiza la función de validación para que acepte valores entre 1 y 8 dígitos.
   const validateAmount = (value) => {
-    const regex = /^[1-9]{2,8}$/; 
-    if (!regex.test(value)) {
+    const numberValue = Number(value); // Convierte el valor a número
+    if (isNaN(numberValue) || numberValue <= 0) {
       return Promise.reject(
-        new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
+        new Error("La cantidad del ingreso debe ser un número positivo")
       );
     }
-    if (value <= 0) {
+    if (value.length < 2 || value.length > 8) {
       return Promise.reject(
-        new Error("La cantidad del ingreso debe ser mayor a 0")
+        new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
       );
     }
     return Promise.resolve();
@@ -27,7 +28,7 @@ function AddIncomeModal({
   const validateName = (value) => {
     if (value.length < 5 || value.length > 20) {
       return Promise.reject(
-        new Error("El nombre debe tener entre 5 y 20 caracteres")
+        new Error("El nombre del ingreso debe tener entre 5 y 20 caracteres")
       );
     }
     return Promise.resolve();
@@ -84,7 +85,7 @@ function AddIncomeModal({
           ]}
         >
           <Input
-            type="number"
+            type="text" // Usa tipo text para permitir validaciones de longitud
             className="border border-gray-400 rounded-lg p-2 w-full"
           />
         </Form.Item>
