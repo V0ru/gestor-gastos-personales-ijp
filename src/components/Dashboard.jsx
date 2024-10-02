@@ -10,7 +10,7 @@ import Cards from "./Cards";
 import NoTransactions from "./NoTransactions";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
-import { addDoc, collection, getDocs, query } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, deleteDoc, doc } from "firebase/firestore";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -97,11 +97,9 @@ const Dashboard = () => {
       name: values.name,
     };
 
-    setTransactions([...transactions, newTransaction]);
+    addTransaction(newTransaction);
     setIsExpenseModalVisible(false);
     setIsIncomeModalVisible(false);
-    addTransaction(newTransaction);
-    calculateBalance();
   };
 
   const calculateBalance = () => {
@@ -125,21 +123,18 @@ const Dashboard = () => {
     calculateBalance();
   }, [transactions]);
 
-  async function addTransaction(transaction, many) {
+  async function addTransaction(transaction) {
     try {
       const docRef = await addDoc(
         collection(db, `users/${user.uid}/transactions`),
         transaction
       );
-      console.log("Documento escrito con DNI: ", docRef.id);
-      if (!many) {
-        toast.success("¡Transacción agregada!");
-      }
+      console.log("Documento escrito con ID: ", docRef.id);
+      toast.success("¡Transacción agregada!");
+      fetchTransactions();
     } catch (e) {
       console.error("Error al agregar el documento: ", e);
-      if (!many) {
-        toast.error("No se pudo agregar la transacción");
-      }
+      toast.error("No se pudo agregar la transacción");
     }
   }
 
@@ -150,12 +145,23 @@ const Dashboard = () => {
       const querySnapshot = await getDocs(q);
       let transactionsArray = [];
       querySnapshot.forEach((doc) => {
-        transactionsArray.push(doc.data());
+        transactionsArray.push({ id: doc.id, ...doc.data() });
       });
       setTransactions(transactionsArray);
       toast.success("Transacciones obtenidas!");
     }
     setLoading(false);
+  }
+
+  async function deleteTransaction(transactionId) {
+    try {
+      await deleteDoc(doc(db, `users/${user.uid}/transactions`, transactionId));
+      toast.success("Transacción eliminada con éxito");
+      fetchTransactions();
+    } catch (error) {
+      console.error("Error al eliminar la transacción: ", error);
+      toast.error("No se pudo eliminar la transacción");
+    }
   }
 
   const balanceConfig = {
@@ -205,8 +211,7 @@ const Dashboard = () => {
       <Header />
       {loading ? (
         <Loader />
-      ) :
-      (
+      ) : (
         <>
           <Cards
             currentBalance={currentBalance}
@@ -254,6 +259,7 @@ const Dashboard = () => {
             exportToCsv={exportToCsv}
             fetchTransactions={fetchTransactions}
             addTransaction={addTransaction}
+            deleteTransaction={deleteTransaction}
           />
         </>
       )}

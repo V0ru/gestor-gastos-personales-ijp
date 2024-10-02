@@ -10,14 +10,23 @@ function AddExpenseModal({
   const [form] = Form.useForm();
 
   const validateAmount = (value) => {
-    const regex = /^[1-9]{2,8}$/; 
-    if (!regex.test(value)) {
+    const numberValue = Number(value);
+    if (isNaN(numberValue) || numberValue < 50) {
       return Promise.reject(
-        new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
+        new Error("La cantidad del gasto debe ser un número de al menos 50")
       );
-      
     }
-    return Promise.resolve(); 
+    if (value.length < 2 || value.length > 9) {
+      return Promise.reject(
+        new Error("La cantidad debe tener entre 2 y 9 dígitos")
+      );
+    }
+    if (value.startsWith('0')) {
+      return Promise.reject(
+        new Error("La cantidad no puede empezar con cero")
+      );
+    }
+    return Promise.resolve();
   };
 
   const validateName = (value) => {
@@ -27,6 +36,16 @@ function AddExpenseModal({
       );
     }
     return Promise.resolve(); 
+  };
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    if (value.length > 9) {
+      e.target.value = value.slice(0, 9);
+    } else {
+      e.target.value = value;
+    }
+    form.setFieldsValue({ amount: e.target.value });
   };
 
   return (
@@ -82,8 +101,13 @@ function AddExpenseModal({
         >
           <Input
             type="text"
-            maxLength={8} 
             className="border border-gray-400 rounded-lg p-2 w-full"
+            onChange={handleAmountChange}
+            onKeyPress={(event) => {
+              if (!/[0-9]/.test(event.key)) {
+                event.preventDefault();
+              }
+            }}
           />
         </Form.Item>
 

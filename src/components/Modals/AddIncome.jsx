@@ -9,17 +9,21 @@ function AddIncomeModal({
 }) {
   const [form] = Form.useForm();
 
-  // Actualiza la función de validación para que acepte valores entre 1 y 8 dígitos.
   const validateAmount = (value) => {
-    const numberValue = Number(value); // Convierte el valor a número
-    if (isNaN(numberValue) || numberValue <= 0) {
+    const numberValue = Number(value);
+    if (isNaN(numberValue) || numberValue < 50) {
       return Promise.reject(
-        new Error("La cantidad del ingreso debe ser un número positivo")
+        new Error("La cantidad del ingreso debe ser un número de al menos 50")
       );
     }
-    if (value.length < 2 || value.length > 8) {
+    if (value.length < 2 || value.length > 9) {
       return Promise.reject(
-        new Error("La cantidad debe ser un número entre 2 y 8 dígitos")
+        new Error("La cantidad debe tener entre 2 y 9 dígitos")
+      );
+    }
+    if (value.startsWith('0')) {
+      return Promise.reject(
+        new Error("La cantidad no puede empezar con cero")
       );
     }
     return Promise.resolve();
@@ -31,13 +35,23 @@ function AddIncomeModal({
         new Error("El nombre del ingreso debe tener entre 5 y 20 caracteres")
       );
     }
-    return Promise.resolve();
+    return Promise.resolve(); 
+  };
+
+  const handleAmountChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    if (value.length > 9) {
+      e.target.value = value.slice(0, 9);
+    } else {
+      e.target.value = value;
+    }
+    form.setFieldsValue({ amount: e.target.value });
   };
 
   return (
     <Modal
       style={{ fontWeight: 600 }}
-      title="Agregar Ingresos"
+      title="Agregar ingresos"
       visible={isIncomeModalVisible}
       onCancel={handleIncomeCancel}
       footer={null}
@@ -67,6 +81,7 @@ function AddIncomeModal({
           <Input
             type="text"
             className="border border-gray-400 rounded-lg p-2 w-full"
+            maxLength={20} 
           />
         </Form.Item>
 
@@ -85,8 +100,14 @@ function AddIncomeModal({
           ]}
         >
           <Input
-            type="text" // Usa tipo text para permitir validaciones de longitud
+            type="text"
             className="border border-gray-400 rounded-lg p-2 w-full"
+            onChange={handleAmountChange}
+            onKeyPress={(event) => {
+              if (!/[0-9]/.test(event.key)) {
+                event.preventDefault();
+              }
+            }}
           />
         </Form.Item>
 
@@ -94,26 +115,32 @@ function AddIncomeModal({
           style={{ fontWeight: 600 }}
           label="Fecha"
           name="date"
-          rules={[{ required: true, message: "Por favor agregar la fecha!" }]}
+          rules={[
+            { required: true, message: "¡Por favor seleccione una fecha!" },
+          ]}
         >
           <DatePicker
-            format="YYYY-MM-DD"
             className="border border-gray-400 rounded-lg p-2 w-full"
+            format="YYYY-MM-DD"
           />
         </Form.Item>
 
         <Form.Item
-          style={{ fontWeight: 600 }}
-          label="Categoría"
+          label="Categoria"
           name="tag"
+          style={{ fontWeight: 600 }}
           rules={[
-            { required: true, message: "Por favor selecciona la categoría!" },
+            {
+              required: true,
+              message: "¡Por favor selecciona una categoria!",
+            },
           ]}
         >
           <Select className="border border-gray-400 rounded-lg p-2 w-full">
-            <Select.Option value="salario">Salario</Select.Option>
-            <Select.Option value="freelance">Freelance</Select.Option>
-            <Select.Option value="inversiones">Inversión</Select.Option>
+            <Select.Option value="comida">Comida</Select.Option>
+            <Select.Option value="educacion">Educación</Select.Option>
+            <Select.Option value="oficio">Oficio</Select.Option>
+            <Select.Option value="gastos_medicos">Gastos Médicos</Select.Option>
             <Select.Option value="otros">Otros</Select.Option>
           </Select>
         </Form.Item>
