@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
-  fetchSignInMethodsForEmail, // Importa esta función
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "./Header";
@@ -16,7 +16,7 @@ const SignUpSignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [phone, setPhone] = useState(""); // Añadido
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [flag, setFlag] = useState(false);
   const navigate = useNavigate();
@@ -167,137 +167,110 @@ const SignUpSignIn = () => {
   return (
     <>
       <Header />
-      <div className="wrapper">
-        {flag ? (
-          <div className="signup-signin-container">
-            <h2 className="text-center">
-              Iniciar sesión en <span className="text-blue-500">FinanDay.</span>
-            </h2>
-            <form onSubmit={signInWithEmail}>
-              <div className="input-wrapper">
-                <p>Email</p>
-                <input
-                  type="email"
-                  placeholder="ijpenaloza@unicesar.edu.co"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <p>Password</p>
-                <input
-                  type="password"
-                  placeholder="Ejemplo1234567"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <button
-                disabled={loading}
-                className="btn"
-                type="submit"
-              >
-                {loading ? "Loading..." : "Iniciar sesión con correo electrónico y contraseña"}
+      <div className="flex justify-center items-center w-screen h-[90vh] mt-20 p-5">
+        <div className="w-[30vw] min-w-[400px] shadow-lg rounded-lg p-8 bg-white">
+          {flag ? (
+            <>
+              <h2 className="text-center">Iniciar sesión en <span className="text-theme">FinanDay.</span></h2>
+              <form onSubmit={signInWithEmail}>
+                <div className="mb-4">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    placeholder="ijpenaloza@unicesar.edu.co"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    placeholder="Ejemplo1234567"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded" type="submit">
+                  {loading ? "Cargando..." : "Iniciar sesión"}
+                </button>
+              </form>
+              <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded mt-4" onClick={signInWithGoogle}>
+                {loading ? "Cargando..." : "Iniciar sesión con Google"}
               </button>
-            </form>
-            <p className="text-center"></p>
-            <button
-              disabled={loading}
-              className="btn btn-blue"
-              onClick={signInWithGoogle}
-            >
-              {loading ? "Loading..." : "Iniciar sesión con Google"}
-            </button>
-            <p
-              onClick={() => setFlag(!flag)}
-              className="text-center mb-0 mt-2 cursor-pointer"
-            >
-              ¿No tienes una cuenta? <span className="text-blue-500">Haga clic aquí.</span>
-            </p>
-          </div>
-        ) : (
-          <div className="signup-signin-container">
-            <h2 className="text-center">
-              Registrarse en <span className="text-blue-500">FinanDay.</span>
-            </h2>
-            <form onSubmit={signUpWithEmail}>
-              <div className="input-wrapper">
-                <p>Nombre completo</p>
-                <input
-                  type="text"
-                  placeholder="Ismael Peñaloza"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="input"
-                />
-              </div>
-              <div className="input-wrapper">
-                <p>Email</p>
-                <input
-                  type="email"
-                  placeholder="ijpenaloza@unicesar.edu.co"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <p>Teléfono</p>
-                <input
-                  type="text"
-                  placeholder="3002231200" // Debe tener 10 dígitos
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <p>Contraseña</p>
-                <input
-                  type="password"
-                  placeholder="Ejemplo1234567"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <div className="input-wrapper">
-                <p>Confirmar Contraseña</p>
-                <input
-                  type="password"
-                  placeholder="Ejemplo1234567"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input"
-                />
-              </div>
-
-              <button type="submit" className="btn">
-                {loading ? "Loading..." : "Registrarse con correo electrónico y contraseña"}
+              <p onClick={() => setFlag(!flag)} className="text-center cursor-pointer">
+                ¿No tienes una cuenta? <span className="text-theme">Haga clic aquí.</span>
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-center">Registrarse en <span className="text-theme">FinanDay.</span></h2>
+              <form onSubmit={signUpWithEmail}>
+                <div className="mb-4">
+                  <label>Nombre completo</label>
+                  <input
+                    type="text"
+                    placeholder="Ismael Peñaloza"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    placeholder="ijpenaloza@unicesar.edu.co"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label>Teléfono</label>
+                  <input
+                    type="text"
+                    placeholder="3002231200"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label>Contraseña</label>
+                  <input
+                    type="password"
+                    placeholder="Ejemplo1234567"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label>Confirmar Contraseña</label>
+                  <input
+                    type="password"
+                    placeholder="Ejemplo1234567"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="border-b border-black w-full p-2"
+                  />
+                </div>
+                <button type="submit" className="bg-blue-500 text-white w-full p-2 rounded">
+                  {loading ? "Cargando..." : "Registrarse"}
+                </button>
+              </form>
+              <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded mt-4" onClick={signInWithGoogle}>
+                {loading ? "Cargando..." : "Registrarse con Google"}
               </button>
-            </form>
-            <button
-              disabled={loading}
-              className="btn btn-blue"
-              onClick={signInWithGoogle}
-            >
-              {loading ? "Loading..." : "Registrarse con Google"}
-            </button>
-            <p
-              onClick={() => setFlag(!flag)}
-              className="text-center mb-0 mt-2 cursor-pointer"
-            >
-              ¿Ya tienes una cuenta? <span className="text-blue-500">Haga clic aquí.</span>
-            </p>
-          </div>
-        )}
+              <p onClick={() => setFlag(!flag)} className="text-center cursor-pointer">
+                ¿Ya tienes una cuenta? <span className="text-theme">Haga clic aquí.</span>
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </>
   );
