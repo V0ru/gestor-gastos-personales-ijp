@@ -167,20 +167,22 @@ const SignUpSignIn = () => {
   return (
     <>
       <Header />
-      <div className="flex justify-center items-center w-screen h-[90vh] mt-20 p-5">
-        <div className="w-[30vw] min-w-[400px] shadow-lg rounded-lg p-8 bg-white">
+      <div className="flex justify-center items-center w-screen min-h-screen pt-20 p-5 bg-gray-50">
+        <div className="w-[30vw] min-w-[400px] shadow-2xl rounded-xl p-10 bg-white transition-all duration-300 hover:shadow-xl my-2">
           {flag ? (
             <>
-              <h2 className="text-center">Iniciar sesión en <span className="text-theme">FinanDay.</span></h2>
-              <form onSubmit={signInWithEmail}>
-                <div className="mb-4">
-                  <label>Email</label>
+              <h2 className="text-3xl font-bold text-center mb-8">
+                Bienvenido a <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay.</span>
+              </h2>
+              <form onSubmit={signInWithEmail} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
                     placeholder="ijpenaloza@unicesar.edu.co"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
                 <div className="mb-4">
@@ -193,80 +195,99 @@ const SignUpSignIn = () => {
                     className="border-b border-black w-full p-2"
                   />
                 </div>
-                <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded" type="submit">
+                <button 
+                  disabled={loading} 
+                  className="w-full p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50"
+                  type="submit"
+                >
                   {loading ? "Cargando..." : "Iniciar sesión"}
                 </button>
               </form>
-              <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded mt-4" onClick={signInWithGoogle}>
+              <button 
+                disabled={loading} 
+                className="w-full mt-4 p-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2"
+                onClick={signInWithGoogle}
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
                 {loading ? "Cargando..." : "Iniciar sesión con Google"}
               </button>
-              <p onClick={() => setFlag(!flag)} className="text-center cursor-pointer">
-                ¿No tienes una cuenta? <span className="text-theme">Haga clic aquí.</span>
+              <p onClick={() => setFlag(!flag)} className="text-center mt-6 text-gray-600 hover:text-gray-800 cursor-pointer transition-all duration-200">
+                ¿No tienes una cuenta? <span className="text-blue-500 font-medium">Regístrate aquí</span>
               </p>
             </>
           ) : (
             <>
-              <h2 className="text-center">Registrarse en <span className="text-theme">FinanDay.</span></h2>
-              <form onSubmit={signUpWithEmail}>
-                <div className="mb-4">
-                  <label>Nombre completo</label>
+              <h2 className="text-3xl font-bold text-center mb-8">
+                Registrarse en <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay.</span>
+              </h2>
+              <form onSubmit={signUpWithEmail} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Nombre completo</label>
                   <input
                     type="text"
                     placeholder="Ismael Peñaloza"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="mb-4">
-                  <label>Email</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
                     placeholder="ijpenaloza@unicesar.edu.co"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="mb-4">
-                  <label>Teléfono</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Teléfono</label>
                   <input
                     type="text"
                     placeholder="3002231200"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="mb-4">
-                  <label>Contraseña</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Contraseña</label>
                   <input
                     type="password"
                     placeholder="Ejemplo1234567"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="mb-4">
-                  <label>Confirmar Contraseña</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Confirmar Contraseña</label>
                   <input
                     type="password"
                     placeholder="Ejemplo1234567"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="border-b border-black w-full p-2"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <button type="submit" className="bg-blue-500 text-white w-full p-2 rounded">
+                <button 
+                  type="submit" 
+                  className="w-full p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50"
+                >
                   {loading ? "Cargando..." : "Registrarse"}
                 </button>
               </form>
-              <button disabled={loading} className="bg-blue-500 text-white w-full p-2 rounded mt-4" onClick={signInWithGoogle}>
+              <button 
+                disabled={loading} 
+                className="w-full mt-4 p-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2"
+                onClick={signInWithGoogle}
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
                 {loading ? "Cargando..." : "Registrarse con Google"}
               </button>
-              <p onClick={() => setFlag(!flag)} className="text-center cursor-pointer">
-                ¿Ya tienes una cuenta? <span className="text-theme">Haga clic aquí.</span>
+              <p onClick={() => setFlag(!flag)} className="text-center mt-6 text-gray-600 hover:text-gray-800 cursor-pointer transition-all duration-200">
+                ¿Ya tienes una cuenta? <span className="text-blue-500 font-medium">Inicia sesión aquí</span>
               </p>
             </>
           )}

@@ -15,6 +15,8 @@ import Loader from "./Loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { unparse } from "papaparse";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const Dashboard = () => {
   const [user] = useAuthState(auth);
@@ -84,9 +86,9 @@ const Dashboard = () => {
     setIsIncomeModalVisible(false);
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
+  //useEffect(() => {
+    //fetchTransactions();
+  //}, []);
 
   const onFinish = (values, type) => {
     const newTransaction = {
@@ -119,9 +121,9 @@ const Dashboard = () => {
     setCurrentBalance(incomeTotal - expensesTotal);
   };
 
-  useEffect(() => {
-    calculateBalance();
-  }, [transactions]);
+ // useEffect(() => {
+   // calculateBalance();
+  //}, [transactions]);
 
   async function addTransaction(transaction) {
     try {
@@ -168,12 +170,56 @@ const Dashboard = () => {
     data: balanceData,
     xField: "month",
     yField: "balance",
+    smooth: true,
+    animation: {
+      appear: {
+        animation: 'path-in',
+        duration: 1000,
+      },
+    },
+    line: {
+      color: '#1d4ed8',
+    },
+    point: {
+      size: 5,
+      shape: 'diamond',
+      style: {
+        fill: 'white',
+        stroke: '#1d4ed8',
+        lineWidth: 2,
+      },
+    },
+    tooltip: {
+      showMarkers: false,
+    },
+    state: {
+      active: {
+        style: {
+          shadowBlur: 4,
+          stroke: '#000',
+          fill: 'red',
+        },
+      },
+    },
   };
 
   const spendingConfig = {
     data: spendingDataArray,
     angleField: "value",
     colorField: "category",
+    radius: 0.8,
+    label: {
+      type: 'outer',
+      content: '{name} {percentage}',
+    },
+    interactions: [
+      {
+        type: 'pie-legend-active',
+      },
+      {
+        type: 'element-active',
+      },
+    ],
   };
 
   function reset() {
@@ -185,11 +231,10 @@ const Dashboard = () => {
   }
 
   const cardStyle = {
-    boxShadow: "0px 0px 30px 8px rgba(227, 227, 227, 0.75)",
-    margin: "2rem",
-    borderRadius: "0.5rem",
-    minWidth: "400px",
-    flex: 1,
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    borderRadius: "1rem",
+    background: "white",
+    border: "none",
   };
 
   function exportToCsv() {
@@ -206,22 +251,124 @@ const Dashboard = () => {
     document.body.removeChild(link);
   }
 
+  useEffect(() => {
+    // Inicializar el tour guiado
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        {
+          element: '.dashboard-container',
+          popover: {
+            title: 'Bienvenido a tu Panel Financiero',
+            description: 'Aquí podrás gestionar todas tus finanzas personales',
+            position: 'bottom'
+          }
+        },
+        {
+          element: '.cards-container', // Necesitarás agregar esta clase en el componente Cards
+          popover: {
+            title: 'Resumen Financiero',
+            description: 'Visualiza tu balance actual, ingresos y gastos',
+            position: 'bottom'
+          }
+        },
+        {
+          element: '.add-expense-btn', // Necesitarás agregar esta clase al botón de gastos
+          popover: {
+            title: 'Agregar Gasto',
+            description: 'Haz clic aquí para registrar un nuevo gasto',
+            position: 'right'
+          }
+        },
+        {
+          element: '.add-income-btn', // Necesitarás agregar esta clase al botón de ingresos
+          popover: {
+            title: 'Agregar Ingreso',
+            description: 'Haz clic aquí para registrar un nuevo ingreso',
+            position: 'left'
+          }
+        }
+      ]
+    });
+
+    // Iniciar el tour solo para nuevos usuarios o primera visita
+    const hasSeenTour = localStorage.getItem('hasSeenTour');
+    if (!hasSeenTour) {
+      driverObj.drive();
+      localStorage.setItem('hasSeenTour', 'true');
+    }
+  }, []);
+
+  // Agregar esta función para reiniciar el tutorial
+  const restartTutorial = () => {
+    const driverObj = driver({
+      showProgress: true,
+      steps: [
+        {
+          element: '.dashboard-container',
+          popover: {
+            title: 'Bienvenido a tu Panel Financiero',
+            description: 'Aquí podrás gestionar todas tus finanzas personales',
+            position: 'bottom'
+          }
+        },
+        {
+          element: '.cards-container',
+          popover: {
+            title: 'Resumen Financiero',
+            description: 'Visualiza tu balance actual, ingresos y gastos',
+            position: 'bottom'
+          }
+        },
+        {
+          element: '.add-expense-btn',
+          popover: {
+            title: 'Agregar Gasto',
+            description: 'Haz clic aquí para registrar un nuevo gasto',
+            position: 'right'
+          }
+        },
+        {
+          element: '.add-income-btn',
+          popover: {
+            title: 'Agregar Ingreso',
+            description: 'Haz clic aquí para registrar un nuevo ingreso',
+            position: 'left'
+          }
+        }
+      ]
+    });
+    
+    driverObj.drive();
+  };
+
   return (
-    <div className="dashboard-container">
+    <div className="min-h-screen bg-gray-50">
       <Header />
+      
       {loading ? (
         <Loader />
       ) : (
-        <>
-          <Cards
-            currentBalance={currentBalance}
-            income={income}
-            expenses={expenses}
-            showExpenseModal={showExpenseModal}
-            showIncomeModal={showIncomeModal}
-            cardStyle={cardStyle}
-            reset={reset}
-          />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <button 
+            onClick={restartTutorial}
+            className="fixed bottom-8 right-8 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            style={{ zIndex: 1000 }}
+          >
+            ?
+          </button>
+          
+          <div className="mb-8">
+            <Cards
+              currentBalance={currentBalance}
+              income={income}
+              expenses={expenses}
+              showExpenseModal={showExpenseModal}
+              showIncomeModal={showIncomeModal}
+              cardStyle={cardStyle}
+              reset={reset}
+            />
+          </div>
 
           <AddExpenseModal
             isExpenseModalVisible={isExpenseModalVisible}
@@ -233,35 +380,49 @@ const Dashboard = () => {
             handleIncomeCancel={handleIncomeCancel}
             onFinish={onFinish}
           />
+
           {transactions.length === 0 ? (
             <NoTransactions />
           ) : (
-            <>
-              <Row gutter={16} className="flex flex-wrap justify-between">
-                <Card bordered={true} style={cardStyle} className="flex-1">
-                  <h2 className="text-xl font-semibold">Estadísticas financieras</h2>
-                  <Line {...balanceConfig} />
-                </Card>
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Estadísticas financieras
+                  </h2>
+                  <div className="h-[400px]">
+                    <Line {...balanceConfig} />
+                  </div>
+                </div>
 
-                <Card bordered={true} style={{ ...cardStyle, flex: "0 0 45%" }} className="flex-1">
-                  <h2 className="text-xl font-semibold">Gasto Total</h2>
-                  {spendingDataArray.length === 0 ? (
-                    <p>Parece que no has gastado nada hasta ahora...</p>
-                  ) : (
-                    <Pie {...spendingConfig} />
-                  )}
-                </Card>
-              </Row>
-            </>
+                <div className="bg-white rounded-2xl p-6 shadow-lg">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Distribución de Gastos
+                  </h2>
+                  <div className="h-[400px]">
+                    {spendingDataArray.length === 0 ? (
+                      <div className="flex items-center justify-center h-full text-gray-500">
+                        No hay gastos registrados aún...
+                      </div>
+                    ) : (
+                      <Pie {...spendingConfig} />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <TransactionSearch
+                  transactions={transactions}
+                  exportToCsv={exportToCsv}
+                  fetchTransactions={fetchTransactions}
+                  addTransaction={addTransaction}
+                  deleteTransaction={deleteTransaction}
+                />
+              </div>
+            </div>
           )}
-          <TransactionSearch
-            transactions={transactions}
-            exportToCsv={exportToCsv}
-            fetchTransactions={fetchTransactions}
-            addTransaction={addTransaction}
-            deleteTransaction={deleteTransaction}
-          />
-        </>
+        </div>
       )}
     </div>
   );
