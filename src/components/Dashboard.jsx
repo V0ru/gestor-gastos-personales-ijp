@@ -10,13 +10,14 @@ import Cards from "./Cards";
 import NoTransactions from "./NoTransactions";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
-import { addDoc, collection, getDocs, query, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, deleteDoc, doc, orderBy } from "firebase/firestore";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { unparse } from "papaparse";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import InitialQuestionsModal from './Modals/InitialQuestionsModal';
 
 const Dashboard = () => {
   const [user] = useAuthState(auth);
@@ -28,6 +29,60 @@ const Dashboard = () => {
   const [income, setIncome] = useState(0);
   const [expenses, setExpenses] = useState(0);
   const navigate = useNavigate();
+  const [showInitialQuestions, setShowInitialQuestions] = useState(false);
+
+  useEffect(() => {
+    console.log('Transacciones actuales:', transactions);
+    calculateTotals();
+  }, [transactions]);
+
+  const calculateTotals = () => {
+    let totalIncome = 0;
+    let totalExpenses = 0;
+
+    transactions.forEach((transaction) => {
+      console.log('Procesando transacción:', transaction);
+      if (transaction.type === 'ingreso') {
+        totalIncome += parseFloat(transaction.amount);
+      } else if (transaction.type === 'gasto') {
+        totalExpenses += parseFloat(transaction.amount);
+      }
+    });
+
+    console.log('Total Income:', totalIncome);
+    console.log('Total Expenses:', totalExpenses);
+
+    setIncome(totalIncome);
+    setExpenses(totalExpenses);
+    setCurrentBalance(totalIncome - totalExpenses);
+  };
+
+  // Función para cargar las transacciones desde Firebase
+  const fetchTransactions = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const transactionsRef = collection(db, 'users', user.uid, 'transactions');
+      const q = query(transactionsRef, orderBy('date', 'desc'));
+      
+      const querySnapshot = await getDocs(q);
+      const transactionsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        amount: parseFloat(doc.data().amount)
+      }));
+      
+      setTransactions(transactionsData);
+    } catch (error) {
+      console.error("Error al cargar las transacciones:", error);
+    }
+  };
+
+  // Cargar transacciones cuando el componente se monta
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
   const processChartData = () => {
     const balanceData = [];
@@ -86,9 +141,27 @@ const Dashboard = () => {
     setIsIncomeModalVisible(false);
   };
 
-  //useEffect(() => {
-    //fetchTransactions();
-  //}, []);
+  useEffect(() => {
+    // Verificar si es la primera vez que el usuario inicia sesión
+    const checkFirstTimeUser = async () => {
+      if (user) {
+        const hasAnsweredQuestions = localStorage.getItem(`initialQuestions_${user.uid}`);
+        if (!hasAnsweredQuestions) {
+          setShowInitialQuestions(true);
+        }
+        await fetchTransactions();
+      }
+    };
+    
+    checkFirstTimeUser();
+  }, [user]);
+
+  const handleInitialQuestionsSubmit = (answers) => {
+    // Aquí puedes guardar las respuestas en Firestore si lo deseas
+    console.log('Respuestas:', answers);
+    localStorage.setItem(`initialQuestions_${user.uid}`, 'true');
+    setShowInitialQuestions(false);
+  };
 
   const onFinish = (values, type) => {
     const newTransaction = {
@@ -104,27 +177,6 @@ const Dashboard = () => {
     setIsIncomeModalVisible(false);
   };
 
-  const calculateBalance = () => {
-    let incomeTotal = 0;
-    let expensesTotal = 0;
-
-    transactions.forEach((transaction) => {
-      if (transaction.type === "ingreso") {
-        incomeTotal += transaction.amount;
-      } else {
-        expensesTotal += transaction.amount;
-      }
-    });
-
-    setIncome(incomeTotal);
-    setExpenses(expensesTotal);
-    setCurrentBalance(incomeTotal - expensesTotal);
-  };
-
- // useEffect(() => {
-   // calculateBalance();
-  //}, [transactions]);
-
   async function addTransaction(transaction) {
     try {
       const docRef = await addDoc(
@@ -138,21 +190,6 @@ const Dashboard = () => {
       console.error("Error al agregar el documento: ", e);
       toast.error("No se pudo agregar la transacción");
     }
-  }
-
-  async function fetchTransactions() {
-    setLoading(true);
-    if (user) {
-      const q = query(collection(db, `users/${user.uid}/transactions`));
-      const querySnapshot = await getDocs(q);
-      let transactionsArray = [];
-      querySnapshot.forEach((doc) => {
-        transactionsArray.push({ id: doc.id, ...doc.data() });
-      });
-      setTransactions(transactionsArray);
-      toast.success("Transacciones obtenidas!");
-    }
-    setLoading(false);
   }
 
   async function deleteTransaction(transactionId) {
@@ -208,14 +245,11 @@ const Dashboard = () => {
     angleField: "value",
     colorField: "category",
     radius: 0.8,
-    label: {
-      type: 'outer',
-      content: '{name} {percentage}',
+    label: false,
+    legend: {
+      position: 'bottom',
     },
     interactions: [
-      {
-        type: 'pie-legend-active',
-      },
       {
         type: 'element-active',
       },
@@ -342,6 +376,56 @@ const Dashboard = () => {
     driverObj.drive();
   };
 
+  const addIncome = async (values) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const transactionData = {
+        type: 'income',
+        amount: parseFloat(values.amount),
+        category: values.category,
+        description: values.description,
+        date: new Date().toISOString(),
+      };
+
+      const transactionsRef = collection(db, 'users', user.uid, 'transactions');
+      await addDoc(transactionsRef, transactionData);
+      
+      // Recargar transacciones después de agregar
+      await fetchTransactions();
+      toast.success('Ingreso agregado exitosamente');
+    } catch (error) {
+      console.error("Error al agregar ingreso:", error);
+      toast.error('Error al agregar ingreso');
+    }
+  };
+
+  const addExpense = async (values) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const transactionData = {
+        type: 'expense',
+        amount: parseFloat(values.amount),
+        category: values.category,
+        description: values.description,
+        date: new Date().toISOString(),
+      };
+
+      const transactionsRef = collection(db, 'users', user.uid, 'transactions');
+      await addDoc(transactionsRef, transactionData);
+      
+      // Recargar transacciones después de agregar
+      await fetchTransactions();
+      toast.success('Gasto agregado exitosamente');
+    } catch (error) {
+      console.error("Error al agregar gasto:", error);
+      toast.error('Error al agregar gasto');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -424,6 +508,13 @@ const Dashboard = () => {
           )}
         </div>
       )}
+      
+      <InitialQuestionsModal
+        isVisible={showInitialQuestions}
+        onClose={() => setShowInitialQuestions(false)}
+        userName={user?.displayName || 'Usuario'}
+        onSubmit={handleInitialQuestionsSubmit}
+      />
     </div>
   );
 };
