@@ -1,32 +1,27 @@
 import React, { useState } from 'react';
-import { Table, Input, DatePicker, Select, Space, Tag } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table, Input, DatePicker, Select, Space, Tag, Button } from 'antd';
+import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-function TransactionSearch({ transactions }) {
+function TransactionSearch({ transactions, user }) {
   const [searchText, setSearchText] = useState('');
   const [dateRange, setDateRange] = useState(null);
   const [selectedType, setSelectedType] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Obtener categorías únicas de las transacciones
-  const categories = [...new Set(transactions.map(t => t.tag))];
+  const categories = [...new Set(transactions.map((t) => t.tag))];
 
-  const filteredTransactions = transactions.filter(transaction => {
-    // Filtro por texto (nombre)
+  const filteredTransactions = transactions.filter((transaction) => {
     const matchesText = transaction.name.toLowerCase().includes(searchText.toLowerCase());
-
-    // Filtro por rango de fechas
-    const matchesDate = dateRange ? 
-      moment(transaction.date).isBetween(dateRange[0], dateRange[1], 'day', '[]') : true;
-
-    // Filtro por tipo
+    const matchesDate = dateRange
+      ? moment(transaction.date).isBetween(dateRange[0], dateRange[1], 'day', '[]')
+      : true;
     const matchesType = selectedType === 'all' ? true : transaction.type === selectedType;
-
-    // Filtro por categoría
     const matchesCategory = selectedCategory === 'all' ? true : transaction.tag === selectedCategory;
 
     return matchesText && matchesDate && matchesType && matchesCategory;
@@ -60,19 +55,19 @@ function TransactionSearch({ transactions }) {
       title: 'Categoría',
       dataIndex: 'tag',
       key: 'tag',
-      render: (tag) => (
-        <Tag color="blue">{tag}</Tag>
-      ),
+      render: (tag) => <Tag color="blue">{tag}</Tag>,
     },
     {
       title: 'Monto',
       dataIndex: 'amount',
       key: 'amount',
       render: (amount, record) => (
-        <span style={{ 
-          color: record.type === 'ingreso' ? 'green' : 'red',
-          fontWeight: 'bold'
-        }}>
+        <span
+          style={{
+            color: record.type === 'ingreso' ? 'green' : 'red',
+            fontWeight: 'bold',
+          }}
+        >
           {record.type === 'ingreso' ? '+' : '-'}€{amount.toLocaleString()}
         </span>
       ),
@@ -80,14 +75,52 @@ function TransactionSearch({ transactions }) {
     },
   ];
 
+  // Función para descargar en PDF
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+  
+    // Validar valores de usuario
+    const userName = user?.name || 'No especificado';
+    const userEmail = user?.email || 'No especificado';
+  
+    const tableColumn = ['Fecha', 'Nombre', 'Tipo', 'Categoría', 'Monto'];
+    const tableRows = filteredTransactions.map((t) => [
+      moment(t.date).format('DD/MM/YYYY'),
+      t.name,
+      t.type === 'ingreso' ? 'Ingreso' : 'Gasto',
+      t.tag,
+      `${t.type === 'ingreso' ? '+' : '-'}€${t.amount.toLocaleString()}`,
+    ]);
+  
+    // Información del usuario
+    doc.setFontSize(16);
+    doc.text('Historial de Transacciones', 14, 15);
+    doc.setFontSize(12);
+    doc.text(`Nombre: ${userName}`, 14, 25);
+    doc.text(`Correo: ${userEmail}`, 14, 32);
+    doc.text(`Fecha de generación: ${moment().format('DD/MM/YYYY HH:mm')}`, 14, 39);
+  
+    // Generar la tabla
+    doc.autoTable({
+      startY: 45,
+      head: [tableColumn],
+      body: tableRows,
+      styles: { halign: 'center' },
+      headStyles: { fillColor: [0, 122, 204] },
+      theme: 'grid',
+    });
+  
+    // Guardar el PDF
+    doc.save('Historial_Transacciones.pdf');
+  };
+
   return (
     <div className="p-6">
       <div className="mb-6 bg-white p-4 rounded-lg shadow">
         <Space direction="vertical" size="middle" className="w-full">
           <h2 className="text-xl font-bold mb-4">Historial de Transacciones</h2>
-          
+
           <Space wrap>
-            {/* Búsqueda por nombre */}
             <Input
               placeholder="Buscar por nombre"
               prefix={<SearchOutlined />}
@@ -96,37 +129,27 @@ function TransactionSearch({ transactions }) {
               style={{ width: 200 }}
             />
 
-            {/* Filtro por fecha */}
-            <RangePicker
-              onChange={(dates) => setDateRange(dates)}
-              format="DD/MM/YYYY"
-            />
+            <RangePicker onChange={(dates) => setDateRange(dates)} format="DD/MM/YYYY" />
 
-            {/* Filtro por tipo */}
-            <Select
-              defaultValue="all"
-              style={{ width: 120 }}
-              onChange={setSelectedType}
-            >
+            <Select defaultValue="all" style={{ width: 120 }} onChange={setSelectedType}>
               <Option value="all">Todos</Option>
               <Option value="ingreso">Ingresos</Option>
               <Option value="gasto">Gastos</Option>
             </Select>
 
-            {/* Filtro por categoría */}
-            <Select
-              defaultValue="all"
-              style={{ width: 120 }}
-              onChange={setSelectedCategory}
-            >
+            <Select defaultValue="all" style={{ width: 120 }} onChange={setSelectedCategory}>
               <Option value="all">Todas</Option>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <Option key={category} value={category}>
                   {category}
                 </Option>
               ))}
             </Select>
           </Space>
+
+          <Button type="primary" icon={<DownloadOutlined />} onClick={downloadPDF}>
+            Descargar PDF
+          </Button>
         </Space>
       </div>
 

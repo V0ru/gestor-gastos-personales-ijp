@@ -70,7 +70,10 @@ const Dashboard = () => {
       const transactionsData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        amount: parseFloat(doc.data().amount)
+        amount: parseFloat(doc.data().amount) || 0,
+        type: doc.data().type || 'gasto',
+        tag: doc.data().tag || 'Sin categoría',
+        date: doc.data().date || new Date().toISOString()
       }));
       
       setTransactions(transactionsData);
@@ -88,32 +91,34 @@ const Dashboard = () => {
     const balanceData = [];
     const spendingData = {};
 
+    // Agrupa las transacciones por mes
     transactions.forEach((transaction) => {
       const monthYear = moment(transaction.date).format("MMM YYYY");
-      const tag = transaction.tag;
-
+      
+      if (!balanceData.find(d => d.month === monthYear)) {
+        balanceData.push({ 
+          month: monthYear, 
+          balance: 0 
+        });
+      }
+      
+      const monthData = balanceData.find(d => d.month === monthYear);
       if (transaction.type === "income") {
-        if (balanceData.some((data) => data.month === monthYear)) {
-          balanceData.find((data) => data.month === monthYear).balance +=
-            transaction.amount;
-        } else {
-          balanceData.push({ month: monthYear, balance: transaction.amount });
-        }
+        monthData.balance += transaction.amount;
       } else {
-        if (balanceData.some((data) => data.month === monthYear)) {
-          balanceData.find((data) => data.month === monthYear).balance -=
-            transaction.amount;
+        monthData.balance -= transaction.amount;
+        
+        // Procesar datos de gastos para el gráfico circular
+        if (spendingData[transaction.tag]) {
+          spendingData[transaction.tag] += transaction.amount;
         } else {
-          balanceData.push({ month: monthYear, balance: -transaction.amount });
-        }
-
-        if (spendingData[tag]) {
-          spendingData[tag] += transaction.amount;
-        } else {
-          spendingData[tag] = transaction.amount;
+          spendingData[transaction.tag] = transaction.amount;
         }
       }
     });
+
+    // Ordenar los datos por fecha
+    balanceData.sort((a, b) => moment(a.month, "MMM YYYY").diff(moment(b.month, "MMM YYYY")));
 
     const spendingDataArray = Object.keys(spendingData).map((key) => ({
       category: key,
@@ -214,30 +219,55 @@ const Dashboard = () => {
         duration: 1000,
       },
     },
+    yAxis: {
+      grid: {
+        line: {
+          style: {
+            stroke: '#E5E7EB',
+            lineWidth: 1,
+            lineDash: [4, 5],
+            strokeOpacity: 0.7,
+          },
+        },
+      },
+    },
+    xAxis: {
+      grid: {
+        line: {
+          style: {
+            stroke: '#E5E7EB',
+          },
+        },
+      },
+    },
     line: {
-      color: '#1d4ed8',
+      size: 2,
     },
     point: {
       size: 5,
-      shape: 'diamond',
+      shape: 'circle',
       style: {
-        fill: 'white',
+        fill: '#fff',
         stroke: '#1d4ed8',
         lineWidth: 2,
       },
     },
     tooltip: {
-      showMarkers: false,
-    },
-    state: {
-      active: {
-        style: {
-          shadowBlur: 4,
-          stroke: '#000',
-          fill: 'red',
+      showMarkers: true,
+      domStyles: {
+        'g2-tooltip': {
+          backgroundColor: '#fff',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+          padding: '8px 12px',
+          border: '1px solid #E5E7EB',
         },
       },
     },
+    theme: {
+      styleSheet: {
+        backgroundColor: '#fff',
+      },
+    }
   };
 
   const spendingConfig = {
@@ -471,11 +501,53 @@ const Dashboard = () => {
             <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white rounded-2xl p-6 shadow-lg">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Estadísticas financieras
-                  </h2>
-                  <div className="h-[400px]">
-                    <Line {...balanceConfig} />
+                  <div className="flex flex-col">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                      Estadística Financiera
+                    </h2>
+                    <div className="text-3xl font-bold mb-6">
+                      ${currentBalance.toFixed(2)}
+                    </div>
+                    <div className="h-[300px]">
+                      <Line 
+                        data={transactions.map(t => ({
+                          type: t.type === 'ingreso' ? 'ingreso' : 'gasto',
+                          fecha: moment(t.date).format('DD/MM/YY'),
+                          valor: t.amount,
+                          categoria: t.tag
+                        }))}
+                        xField="fecha"
+                        yField="valor"
+                        seriesField="type"
+                        smooth={true}
+                        animation={{
+                          appear: {
+                            animation: 'path-in',
+                            duration: 1000,
+                          },
+                        }}
+                        legend={{
+                          position: 'top'
+                        }}
+                        color={['#22c55e', '#ef4444']} // verde para ingresos, rojo para gastos
+                        point={{
+                          size: 5,
+                          shape: 'circle',
+                          style: {
+                            fill: '#fff',
+                            lineWidth: 2,
+                          },
+                        }}
+                        tooltip={{
+                          showMarkers: true,
+                          fields: ['type', 'valor', 'categoria'],
+                          formatter: (datum) => ({
+                            name: datum.type,
+                            value: `$${datum.valor.toFixed(2)} - ${datum.categoria}`
+                          })
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -498,6 +570,7 @@ const Dashboard = () => {
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <TransactionSearch
                   transactions={transactions}
+                  user={{ name: user?.displayName, email: user?.email }}
                   exportToCsv={exportToCsv}
                   fetchTransactions={fetchTransactions}
                   addTransaction={addTransaction}
