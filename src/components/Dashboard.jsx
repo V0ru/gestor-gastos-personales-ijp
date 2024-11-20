@@ -21,7 +21,7 @@ import InitialQuestionsModal from './Modals/InitialQuestionsModal';
 import TransferModal from './Modals/TransferModal';
 
 const Dashboard = () => {
-  const [user] = useAuthState(auth);
+  const [user, userloading] = useAuthState(auth);
   const [isExpenseModalVisible, setIsExpenseModalVisible] = useState(false);
   const [isIncomeModalVisible, setIsIncomeModalVisible] = useState(false);
   const [transactions, setTransactions] = useState([]);
@@ -32,6 +32,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [showInitialQuestions, setShowInitialQuestions] = useState(false);
   const [isTransferModalVisible, setIsTransferModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (userloading) return; // Esperar a que se cargue el estado de autenticación
+    if (!user) {
+      navigate('/start'); // Redirigir a la página de inicio si no hay usuario
+    }
+  }, [user, userloading, navigate]);
 
   useEffect(() => {
     console.log('Transacciones actuales:', transactions);
@@ -587,7 +594,6 @@ const Dashboard = () => {
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <TransactionSearch
                   transactions={transactions}
-                  user={{ name: user?.displayName, email: user?.email }}
                   exportToCsv={exportToCsv}
                   fetchTransactions={fetchTransactions}
                   addTransaction={addTransaction}
