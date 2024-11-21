@@ -573,6 +573,7 @@ const Dashboard = () => {
               <div className="bg-white rounded-2xl p-6 shadow-lg">
                 <TransactionSearch
                   transactions={transactions}
+                  user={{ email: user?.email }}
                   exportToCsv={exportToCsv}
                   fetchTransactions={fetchTransactions}
                   addTransaction={addTransaction}

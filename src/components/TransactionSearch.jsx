@@ -80,7 +80,7 @@ function TransactionSearch({ transactions, user }) {
     const doc = new jsPDF();
   
     // Validar valores de usuario
-    const userName = user?.name || 'No especificado';
+    //const userName = user?.name || 'No especificado';
     const userEmail = user?.email || 'No especificado';
   
     const tableColumn = ['Fecha', 'Nombre', 'Tipo', 'Categoría', 'Monto'];
@@ -94,7 +94,7 @@ function TransactionSearch({ transactions, user }) {
   
     // Información del usuario
     doc.setFontSize(12);
-    doc.text(`Nombre: ${userName}`, 14, 25);
+    //doc.text(`Nombre: ${userName}`, 14, 25);
     doc.text(`Correo: ${userEmail}`, 14, 32);
     doc.text(`Fecha de generación: ${moment().format('DD/MM/YYYY HH:mm')}`, 14, 39);
     
