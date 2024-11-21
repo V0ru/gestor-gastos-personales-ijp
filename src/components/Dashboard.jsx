@@ -31,12 +31,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [showInitialQuestions, setShowInitialQuestions] = useState(false);
 
-  useEffect(() => {
-    if (userloading) return; // Esperar a que se cargue el estado de autenticación
-    if (!user) {
-      navigate('/start'); // Redirigir a la página de inicio si no hay usuario
-    }
-  }, [user, userloading, navigate]);
 
   useEffect(() => {
     console.log('Transacciones actuales:', transactions);

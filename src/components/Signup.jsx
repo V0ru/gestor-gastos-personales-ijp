@@ -172,7 +172,7 @@ const SignUpSignIn = () => {
           {flag ? (
             <>
               <h2 className="text-3xl font-bold text-center mb-8">
-                Bienvenido a <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay.</span>
+                Bienvenido a <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay</span>
               </h2>
               <form onSubmit={signInWithEmail} className="space-y-6">
                 <div className="space-y-2">
@@ -218,7 +218,7 @@ const SignUpSignIn = () => {
           ) : (
             <>
               <h2 className="text-3xl font-bold text-center mb-8">
-                Registrarse en <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay.</span>
+                Registrarse en <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay</span>
               </h2>
               <form onSubmit={signUpWithEmail} className="space-y-6">
                 <div className="space-y-2">

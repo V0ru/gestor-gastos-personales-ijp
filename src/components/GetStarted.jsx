@@ -1,66 +1,67 @@
 import React from 'react';
-import { Layout, Typography, Button, Row, Col, Card } from 'antd';
-import { CheckCircleOutlined, MoneyCollectOutlined, BarChartOutlined, FileTextOutlined } from '@ant-design/icons';
-
-const { Title, Paragraph } = Typography;
-const { Content } = Layout;
+import { useNavigate } from 'react-router-dom';
+import {
+  CheckCircleOutlined,
+  MoneyCollectOutlined,
+  BarChartOutlined,
+  FileTextOutlined,
+} from '@ant-design/icons';
 
 const GetStarted = () => {
+  const navigate = useNavigate();
+
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Content style={{ padding: '50px', backgroundColor: '#f0f2f5' }}>
-        <Title level={2} style={{ textAlign: 'center' }}>Bienvenido a tu Panel Financiero</Title>
-        <Paragraph style={{ textAlign: 'center', fontSize: '18px' }}>
+    <div className="min-h-screen bg-gradient-to-r from-blue-600 to-blue-800 p-6">
+      <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-4">
+          Bienvenido a <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay</span>
+        </h2>
+        <p className="text-center text-gray-600 text-lg">
           Esta aplicación te ayudará a gestionar tus finanzas personales de manera efectiva.
-        </Paragraph>
+        </p>
 
-        <Row gutter={16} style={{ marginTop: '30px' }}>
-          <Col span={6}>
-            <Card>
-              <CheckCircleOutlined style={{ fontSize: '40px', color: '#52c41a' }} />
-              <Title level={4}>Registro de Transacciones</Title>
-              <Paragraph>
-                Agrega tus ingresos y gastos fácilmente para llevar un control de tus finanzas.
-              </Paragraph>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <MoneyCollectOutlined style={{ fontSize: '40px', color: '#faad14' }} />
-              <Title level={4}>Visualización de Datos</Title>
-              <Paragraph>
-                Visualiza tus ingresos y gastos a través de gráficos interactivos.
-              </Paragraph>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <BarChartOutlined style={{ fontSize: '40px', color: '#1890ff' }} />
-              <Title level={4}>Estadísticas Financieras</Title>
-              <Paragraph>
-                Obtén un resumen de tu situación financiera con estadísticas claras.
-              </Paragraph>
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <FileTextOutlined style={{ fontSize: '40px', color: '#eb2f2f' }} />
-              <Title level={4}>Descarga de Reportes</Title>
-              <Paragraph>
-                Descarga tu historial de transacciones en formato PDF o CSV.
-              </Paragraph>
-            </Card>
-          </Col>
-        </Row>
-
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <Button type="primary" size="large" href="/">
-            Comenzar
-          </Button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          <div className="bg-white border border-green-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+            <CheckCircleOutlined className="text-green-500 text-5xl mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700">Registro de Transacciones</h3>
+            <p className="text-gray-500">
+              Agrega tus ingresos y gastos fácilmente para llevar un control de tus finanzas.
+            </p>
+          </div>
+          <div className="bg-white border border-yellow-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+            <MoneyCollectOutlined className="text-yellow-500 text-5xl mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700">Visualización de Datos</h3>
+            <p className="text-gray-500">
+              Visualiza tus ingresos y gastos a través de gráficos interactivos.
+            </p>
+          </div>
+          <div className="bg-white border border-blue-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+            <BarChartOutlined className="text-blue-500 text-5xl mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700">Estadísticas Financieras</h3>
+            <p className="text-gray-500">
+              Obtén un resumen de tu situación financiera con estadísticas claras.
+            </p>
+          </div>
+          <div className="bg-white border border-red-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
+            <FileTextOutlined className="text-red-500 text-5xl mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700">Descarga de Reportes</h3>
+            <p className="text-gray-500">
+              Descarga tu historial de transacciones en formato PDF o CSV.
+            </p>
+          </div>
         </div>
-      </Content>
-    </Layout>
+
+        <div className="text-center mt-10">
+          <button
+            onClick={() => navigate('/sing')}
+            className="px-8 py-3 bg-blue-700 text-white text-lg font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-md"
+          >
+            Comenzar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default GetStarted; 
+export default GetStarted;

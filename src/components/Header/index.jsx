@@ -16,7 +16,7 @@ function Header() {
 
   useEffect(() => {
     if (!user) {
-      navigate("/");
+      navigate("/sing");
     } else {
       navigate("/dashboard");
     }
