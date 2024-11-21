@@ -93,13 +93,11 @@ function TransactionSearch({ transactions, user }) {
     ]);
   
     // Información del usuario
-    doc.setFontSize(16);
-    doc.text('Historial de Transacciones', 14, 15);
     doc.setFontSize(12);
     doc.text(`Nombre: ${userName}`, 14, 25);
     doc.text(`Correo: ${userEmail}`, 14, 32);
     doc.text(`Fecha de generación: ${moment().format('DD/MM/YYYY HH:mm')}`, 14, 39);
-  
+    
     // Generar la tabla
     doc.autoTable({
       startY: 45,

@@ -53,7 +53,7 @@ function Header() {
               to="/"
               className="inline-flex items-center px-4 py-2 rounded-lg bg-white text-blue-600 hover:bg-blue-50 font-medium text-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
             >
-              Ingresar / Registrarse
+              Home
             </Link>
           )}
         </div>

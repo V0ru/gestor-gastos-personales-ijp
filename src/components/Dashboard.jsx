@@ -18,7 +18,6 @@ import { unparse } from "papaparse";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import InitialQuestionsModal from './Modals/InitialQuestionsModal';
-import TransferModal from './Modals/TransferModal';
 
 const Dashboard = () => {
   const [user, userloading] = useAuthState(auth);
@@ -459,14 +458,6 @@ const Dashboard = () => {
     }
   };
 
-  const showTransferModal = () => {
-    setIsTransferModalVisible(true);
-  };
-
-  const handleTransferCancel = () => {
-    setIsTransferModalVisible(false);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -481,13 +472,6 @@ const Dashboard = () => {
             style={{ zIndex: 1000 }}
           >
             ?
-          </button>
-          <button 
-            onClick={showTransferModal}
-            className="fixed bottom-8 right-8 w-12 h-12 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center text-2xl font-bold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            style={{ zIndex: 1000 }}
-          >
-            💸
           </button>
           
           <div className="mb-8">
@@ -605,12 +589,6 @@ const Dashboard = () => {
         onClose={() => setShowInitialQuestions(false)}
         userName={user?.displayName || 'Usuario'}
         onSubmit={handleInitialQuestionsSubmit}
-      />
-      <TransferModal
-        isVisible={isTransferModalVisible}
-        onClose={handleTransferCancel}
-        currentBalance={currentBalance}
-        fetchTransactions={fetchTransactions}
       />
     </div>
   );
