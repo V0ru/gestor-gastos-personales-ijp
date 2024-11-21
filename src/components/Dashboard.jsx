@@ -499,6 +499,7 @@ const Dashboard = () => {
               showIncomeModal={showIncomeModal}
               cardStyle={cardStyle}
               reset={reset}
+              userId={user?.uid}
             />
           </div>
 

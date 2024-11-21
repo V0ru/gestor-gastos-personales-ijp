@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Card, Row, message, notification, Modal } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { getDatabase, ref, update } from 'firebase/database';
 
 function Cards({
   currentBalance,
@@ -8,10 +9,10 @@ function Cards({
   expenses,
   showExpenseModal,
   showIncomeModal,
-  reset,
   showGoalModal,
   savingGoal,
-  goalProgress
+  goalProgress,
+  userId
 }) {
   const { confirm } = Modal;
 
@@ -83,6 +84,21 @@ function Cards({
         // No hace nada, solo cierra el modal
       },
     });
+  };
+
+  const reset = async () => {
+    try {
+      const db = getDatabase();
+      const userRef = ref(db, `usuarios/${userId}`);
+      await update(userRef, {
+        balance: 0,
+        ingresos: [],
+        gastos: []
+      });
+      message.success("Saldo limpiado exitosamente.");
+    } catch (error) {
+      message.error("Error al limpiar el saldo: " + error.message);
+    }
   };
 
   return (

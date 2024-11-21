@@ -10,6 +10,7 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "./Header";
 import { toast } from "react-toastify";
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 const SignUpSignIn = () => {
   const [name, setName] = useState("");
@@ -19,6 +20,8 @@ const SignUpSignIn = () => {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [flag, setFlag] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const validateFields = () => {
@@ -185,15 +188,21 @@ const SignUpSignIn = () => {
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="mb-4">
+                <div className="mb-4 relative">
                   <label>Contraseña</label>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Ejemplo1234567"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="border-b border-black w-full p-2"
                   />
+                  <span 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 transform -translate-y-0  cursor-pointer"
+                  >
+                    {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </span>
                 </div>
                 <button 
                   disabled={loading} 
@@ -251,25 +260,37 @@ const SignUpSignIn = () => {
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 mb-4 relative">
                   <label className="text-sm font-medium text-gray-700">Contraseña</label>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Ejemplo1234567"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
+                  <span 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 mb-4 relative">
                   <label className="text-sm font-medium text-gray-700">Confirmar Contraseña</label>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Ejemplo1234567"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
+                  <span 
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-2 top-1/2 transform -translate-y-1 cursor-pointer"
+                  >
+                    {showConfirmPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                  </span>
                 </div>
                 <button 
                   type="submit" 
