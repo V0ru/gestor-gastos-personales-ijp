@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, message, notification, Modal } from "antd";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { getDatabase, ref, update } from 'firebase/database';
+import { collection, query, getDocs, deleteDoc } from "firebase/firestore"; // Asegúrate de importar las funciones necesarias
+import { auth, db } from "../firebase";
 
 function Cards({
   currentBalance,
@@ -9,12 +10,75 @@ function Cards({
   expenses,
   showExpenseModal,
   showIncomeModal,
-  showGoalModal,
-  savingGoal,
-  goalProgress,
   userId
 }) {
   const { confirm } = Modal;
+  const [userUid, setUserUid] = useState(null); // Estado para almacenar el uid del usuario
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("Usuario autenticado:", user.uid); // Muestra el uid en la consola
+        setUserUid(user.uid); // Asigna el uid al estado
+      } else {
+        console.log("No hay usuario autenticado.");
+      }
+    });
+
+    return () => unsubscribe(); // Limpiar el suscriptor al desmontar el componente
+  }, []);
+
+  const reset = async () => {
+    if (!userUid) {
+      message.error("No se puede limpiar el saldo: el usuario no está identificado.");
+      return;
+    }
+  
+    console.log("UID del usuario:", userUid); // Imprimir el UID para depuración
+  
+    try {
+      const transactionsRef = collection(db, 'users', userUid, 'transactions'); // Referencia a la colección de transacciones
+      const q = query(transactionsRef); // Consulta sin filtro
+      
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        message.info("No hay transacciones para eliminar.");
+        return;
+      }
+      
+      const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      
+      window.location.reload();
+      message.success("Todas las transacciones fueron eliminadas exitosamente.");
+    } catch (error) {
+      message.error("Error al eliminar las transacciones: " + error.message);
+      console.error("Error:", error);
+    }
+  };
+
+  const showConfirmReset = () => {
+    confirm({
+      title: '¿Estás seguro que deseas limpiar el saldo?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Esta acción eliminará todos los registros de ingresos y gastos. No podrás recuperar esta información.',
+      okText: 'Sí, limpiar',
+      cancelText: 'Cancelar',
+      centered: true,
+      className: 'rounded-2xl',
+      okButtonProps: {
+        className: 'bg-red-500 hover:bg-red-600 border-none',
+        danger: true,
+      },
+      onOk() {
+        reset(); // Llama a la función reset
+      },
+      onCancel() {
+        // No hace nada, solo cierra el modal
+      },
+    });
+  };
 
   useEffect(() => {
     if (currentBalance < 0) {
@@ -64,42 +128,11 @@ function Cards({
     }).format(amount);
   };
 
-  const showConfirmReset = () => {
-    confirm({
-      title: '¿Estás seguro que deseas limpiar el saldo?',
-      icon: <ExclamationCircleOutlined />,
-      content: 'Esta acción eliminará todos los registros de ingresos y gastos. No podrás recuperar esta información.',
-      okText: 'Sí, limpiar',
-      cancelText: 'Cancelar',
-      centered: true,
-      className: 'rounded-2xl',
-      okButtonProps: {
-        className: 'bg-red-500 hover:bg-red-600 border-none',
-        danger: true,
-      },
-      onOk() {
-        reset();
-      },
-      onCancel() {
-        // No hace nada, solo cierra el modal
-      },
-    });
-  };
-
-  const reset = async () => {
-    try {
-      const db = getDatabase();
-      const userRef = ref(db, `usuarios/${userId}`);
-      await update(userRef, {
-        balance: 0,
-        ingresos: [],
-        gastos: []
-      });
-      message.success("Saldo limpiado exitosamente.");
-    } catch (error) {
-      message.error("Error al limpiar el saldo: " + error.message);
-    }
-  };
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No hay usuario autenticado.");
+    return; // Salir si no hay usuario autenticado
+  }
 
   return (
     <div className="cards-container">
