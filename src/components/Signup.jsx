@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   fetchSignInMethodsForEmail,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import Header from "./Header";
@@ -22,6 +23,8 @@ const SignUpSignIn = () => {
   const [flag, setFlag] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [showResetForm, setShowResetForm] = useState(false);
   const navigate = useNavigate();
 
   const validateFields = () => {
@@ -167,6 +170,19 @@ const SignUpSignIn = () => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!resetEmail) {
+      toast.error("Por favor, ingresa tu correo electrónico.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      toast.success("Correo de recuperación enviado. Revisa tu bandeja de entrada.");
+    } catch (error) {
+      toast.error("Error al enviar el correo de recuperación: " + error.message);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -223,6 +239,26 @@ const SignUpSignIn = () => {
               <p onClick={() => setFlag(!flag)} className="text-center mt-6 text-gray-600 hover:text-gray-800 cursor-pointer transition-all duration-200">
                 ¿No tienes una cuenta? <span className="text-blue-500 font-medium">Regístrate aquí</span>
               </p>
+              <p className="text-center mt-2 text-gray-600 hover:text-gray-800 cursor-pointer transition-all duration-200">
+                <span className="text-blue-500 font-medium" onClick={() => setShowResetForm(!showResetForm)}>¿Olvidaste tu contraseña?</span>
+              </p>
+              {showResetForm && (
+                <div className="mt-4 transition-all duration-300">
+                  <input
+                    type="email"
+                    placeholder="Ingresa tu correo para recuperar contraseña"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <button
+                    onClick={handlePasswordReset}
+                    className="w-full mt-2 p-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200"
+                  >
+                    Enviar correo de recuperación
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <>
