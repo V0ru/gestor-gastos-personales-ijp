@@ -183,14 +183,25 @@ const SignUpSignIn = () => {
     }
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePasswordStrength = (password) => {
+    if (password.length < 6) return "Débil";
+    if (password.length < 10) return "Moderada";
+    return "Fuerte";
+  };
+
   return (
     <>
       <Header />
-      <div className="flex justify-center items-center w-screen min-h-screen pt-20 p-5 bg-gray-50">
-        <div className="w-[30vw] min-w-[400px] shadow-2xl rounded-xl p-10 bg-white transition-all duration-300 hover:shadow-xl my-2">
+      <div className="flex justify-center items-center w-screen min-h-screen pt-20 p-5 bg-gradient-to-r from-blue-100 to-purple-100">
+        <div className="w-full max-w-md shadow-2xl rounded-xl p-10 bg-white transition-all duration-300 hover:shadow-xl my-2">
           {flag ? (
             <>
-              <h2 className="text-3xl font-bold text-center mb-8">
+              <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
                 Bienvenido a <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay</span>
               </h2>
               <form onSubmit={signInWithEmail} className="space-y-6">
@@ -201,7 +212,7 @@ const SignUpSignIn = () => {
                     placeholder="ijpenaloza@unicesar.edu.co"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className={`w-full p-3 border ${validateEmail(email) ? 'border-green-500' : 'border-red-500'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
                   />
                 </div>
                 <div className="mb-4 relative">
@@ -262,7 +273,7 @@ const SignUpSignIn = () => {
             </>
           ) : (
             <>
-              <h2 className="text-3xl font-bold text-center mb-8">
+              <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
                 Registrarse en <span className="text-theme bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">FinanDay</span>
               </h2>
               <form onSubmit={signUpWithEmail} className="space-y-6">
@@ -283,7 +294,7 @@ const SignUpSignIn = () => {
                     placeholder="ijpenaloza@unicesar.edu.co"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className={`w-full p-3 border ${validateEmail(email) ? 'border-green-500' : 'border-red-500'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -311,6 +322,7 @@ const SignUpSignIn = () => {
                   >
                     {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
                   </span>
+                  <p className="text-sm text-gray-500 mt-1">Fuerza: {validatePasswordStrength(password)}</p>
                 </div>
                 <div className="space-y-2 mb-4 relative">
                   <label className="text-sm font-medium text-gray-700">Confirmar Contraseña</label>

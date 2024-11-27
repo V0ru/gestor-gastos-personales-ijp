@@ -21,29 +21,29 @@ const GetStarted = () => {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          <div className="bg-white border border-green-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
-            <CheckCircleOutlined className="text-green-500 text-5xl mb-4" />
+          <div className="bg-white border border-green-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow transform hover:scale-105 animate-fadeIn">
+            <CheckCircleOutlined className="text-green-500 text-5xl mb-4 animate-bounce" />
             <h3 className="text-lg font-semibold text-gray-700">Registro de Transacciones</h3>
             <p className="text-gray-500">
               Agrega tus ingresos y gastos fácilmente para llevar un control de tus finanzas.
             </p>
           </div>
-          <div className="bg-white border border-yellow-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
-            <MoneyCollectOutlined className="text-yellow-500 text-5xl mb-4" />
+          <div className="bg-white border border-yellow-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow transform hover:scale-105 animate-fadeIn">
+            <MoneyCollectOutlined className="text-yellow-500 text-5xl mb-4 animate-bounce" />
             <h3 className="text-lg font-semibold text-gray-700">Visualización de Datos</h3>
             <p className="text-gray-500">
               Visualiza tus ingresos y gastos a través de gráficos interactivos.
             </p>
           </div>
-          <div className="bg-white border border-blue-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
-            <BarChartOutlined className="text-blue-500 text-5xl mb-4" />
+          <div className="bg-white border border-blue-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow transform hover:scale-105 animate-fadeIn">
+            <BarChartOutlined className="text-blue-500 text-5xl mb-4 animate-bounce" />
             <h3 className="text-lg font-semibold text-gray-700">Estadísticas Financieras</h3>
             <p className="text-gray-500">
               Obtén un resumen de tu situación financiera con estadísticas claras.
             </p>
           </div>
-          <div className="bg-white border border-red-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow">
-            <FileTextOutlined className="text-red-500 text-5xl mb-4" />
+          <div className="bg-white border border-red-500 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-shadow transform hover:scale-105 animate-fadeIn">
+            <FileTextOutlined className="text-red-500 text-5xl mb-4 animate-bounce" />
             <h3 className="text-lg font-semibold text-gray-700">Descarga de Reportes</h3>
             <p className="text-gray-500">
               Descarga tu historial de transacciones en formato PDF o CSV.
@@ -54,7 +54,7 @@ const GetStarted = () => {
         <div className="text-center mt-10">
           <button
             onClick={() => navigate('/sing')}
-            className="px-8 py-3 bg-blue-700 text-white text-lg font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-md"
+            className="px-8 py-3 bg-blue-700 text-white text-lg font-semibold rounded-lg hover:bg-blue-600 transition-colors shadow-md animate-pulse"
           >
             Comenzar
           </button>
